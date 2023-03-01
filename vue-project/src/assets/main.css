@@ -1,0 +1,12 @@
+body{
+    margin:0;
+    padding:0;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+  .title{
+      display: flex;
+      justify-content: center;
+      padding-top:10vh;
+      padding-bottom:2vh;
+  }
