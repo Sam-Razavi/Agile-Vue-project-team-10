@@ -1,51 +1,50 @@
-
- <template>
-<div>
-<div class="calendar-header">
-        <button @click="previousWeek">&lt;</button>
-        <h2>{{ startDate }} - {{ endDate }}</h2>
-        <button @click="nextWeek">&gt;</button>
-      </div>
-      <h2 class="current-date text-center">{{ currentDate }}</h2>
-   <div class="container">
+<template>
   <div>
-
-    <table>
-      <thead>
-        <tr>
-          <th></th>
-          <th>Monday</th>
-          <th>Tuesday</th>
-          <th>Wednesday</th>
-          <th>Thursday</th>
-          <th>Friday</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="hour in hours" :key="hour">
-          <td>{{ hour }}</td>
-          <td v-for="day in days" :key="day">
-            <ul>
-              <li v-for="event in getEvents(hour, day)" :key="event.id">{{ event.name }}</li>
-            </ul>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="calendar-header">
+      <button @click="previousWeek">&lt;</button>
+      <h2>{{ startDate }} - {{ endDate }}</h2>
+      <button @click="nextWeek">&gt;</button>
+    </div>
+    <h2 class="current-date text-center">{{ currentDate }}</h2>
+    <div class="container">
+      <div>
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th>Monday</th>
+              <th>Tuesday</th>
+              <th>Wednesday</th>
+              <th>Thursday</th>
+              <th>Friday</th>
+              <th>Saturday</th>
+              <th>Sunday</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="hour in hours" :key="hour">
+              <td>{{ hour }}</td>
+              <td v-for="day in days" :key="day">
+                <ul>
+                  <li v-for="event in getEvents(hour, day)" :key="event.id">{{ event.name }}</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
-</div>
-</div>
 
-<button>Add event</button>
+  <button>Add event</button>
 </template>
-
 
 <script>
 export default {
   data() {
     return {
       currentDate: new Date(),
-      days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+      days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
       hours: [
         '08:00',
         '08:30',
@@ -74,14 +73,9 @@ export default {
         '20:00',
         '20:30',
         '21:00',
-        '21:30',
-
-
+        '21:30'
       ],
-      events: [
-        { id: 1, name: 'valfri event', day: 'Monday', start: '10.00', end: '11.00' },
-
-      ]
+      events: [{ id: 1, name: 'valfri event', day: 'Monday', start: '10.00', end: '11.00' }]
     }
   },
   computed: {
@@ -103,17 +97,15 @@ export default {
   },
   methods: {
     getEvents(hour, day, weekStart) {
-  const events = this.events.filter((event) => event.day === day);
-  return events.filter((event) => {
-    const eventDate = new Date(`${weekStart} ${event.start}`);
-    const eventHour = eventDate.getHours().toString().padStart(2, '0');
-    return eventHour === hour;
-  });
-},
-
+      const events = this.events.filter((event) => event.day === day)
+      return events.filter((event) => {
+        const eventDate = new Date(`${weekStart} ${event.start}`)
+        const eventHour = eventDate.getHours().toString().padStart(2, '0')
+        return eventHour === hour
+      })
+    }
   }
-};
-
+}
 </script>
 <style>
 .schedule {
@@ -121,6 +113,7 @@ export default {
 }
 
 table {
+    table-layout: fixed;
   border-collapse: collapse;
   width: 100%;
 }
@@ -169,10 +162,9 @@ li {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
-
 }
-.container{
-    min-width: 500px;
+.container {
+  min-width: 500px;
   max-height: 500px;
   overflow: scroll;
 }
