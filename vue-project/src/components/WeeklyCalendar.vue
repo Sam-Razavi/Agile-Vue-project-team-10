@@ -12,6 +12,7 @@
         <thead>
           <tr>
             <th>Time</th>
+            <!-- Column for each day in the day object -->
             <th v-for="day in days">{{ day }}</th>
           </tr>
         </thead>
@@ -23,6 +24,7 @@
                 {{ hour[day].event }}
               </div>
               <div v-else>
+              <!-- Creating a button for adding events -->
                 <button class="addEvent" @click="addEvent(day, hour.time, $event.currentTarget)">Add Event</button>
               </div>
             </td>
