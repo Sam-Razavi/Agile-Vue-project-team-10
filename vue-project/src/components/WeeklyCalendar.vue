@@ -13,7 +13,7 @@
           <tr>
             <th>Time</th>
             <!-- Column for each day in the day object -->
-            <th v-for="day in days">{{ day }}</th>
+            <th v-for="day in days" :key="day">{{ day }}</th>
           </tr>
         </thead>
         <tbody>
@@ -140,8 +140,48 @@
       }
       return date.toISOString().slice(0,10);
     }
+  },
+  created() {
+    // Created function that loads the data we have from the local storage
+    const savedData = JSON.parse(localStorage.getItem("calendarData"));
+    //Converting back to object
+    if (savedData) {
+        //We load the saved data "currentDate" and "hours"
+      this.currentDate = new Date(savedData.currentDate);
+      this.hours = savedData.hours;
+    }
+  },
+  watch: {
+    //Adding a watcher so it saves the data automatically everytime it changes
+    currentDate: {
+      deep: true,
+      handler(newEvent) {
+        localStorage.setItem(
+          "calendarData",
+          JSON.stringify({
+            //We save both the "currentDate"s data and "hours" data to our local storage
+            currentDate: newEvent.toISOString(),
+            hours: this.hours
+          })
+        );
+      }
+    },
+    hours: {
+        //deep lets you access the nested prperties of our saved data
+      deep: true,
+      handler(newEvent) {
+        localStorage.setItem(
+          "calendarData",
+          JSON.stringify({
+            //converting to string
+            currentDate: this.currentDate.toISOString(),
+            hours: newEvent
+          })
+        );
+      }
+    }
   }
-  }
+};
   </script>
   <style>
 .hours {
