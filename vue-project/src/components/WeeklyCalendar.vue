@@ -1,28 +1,19 @@
 <template>
   <div>
-    <div class="calendar-header">
-      <button @click="previousWeek">&lt;</button>
-      <h2>{{ startDate }} - {{ endDate }}</h2>
-      <button @click="nextWeek">&gt;</button>
-    </div>
+  
+
     <h2 class="current-date text-center">{{ currentDate }}</h2>
     <div class="container">
       <div>
         <table>
           <thead>
             <tr>
-              <th></th>
-              <th>Monday</th>
-              <th>Tuesday</th>
-              <th>Wednesday</th>
-              <th>Thursday</th>
-              <th>Friday</th>
-              <th>Saturday</th>
-              <th>Sunday</th>
+              <th>Time</th>
+              <th v-for="day in days" :key="day" >{{ day.format('ddd D') }}</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="hour in hours" :key="hour">
+            <tr v-for="hour in hours" :key="hour" >
               <td>{{ hour }}</td>
               <td v-for="day in days" :key="day">
                 <ul>
@@ -35,16 +26,23 @@
       </div>
     </div>
   </div>
-
-  <button>Add event</button>
 </template>
 
 <script>
+import moment from 'moment'
+
 export default {
   data() {
+    const days = []
+    const firstDayOfTheCurrentWeek = moment().weekday(1)
+    for (let i = 0; i < 7; i++) {
+        days.push(moment(firstDayOfTheCurrentWeek).add(i,'days'))
+
+    }
     return {
-      currentDate: new Date(),
-      days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+
+      currentDate: moment().format("MMMM Do YYYY"),
+      days: days,
       hours: [
         '08:00',
         '08:30',
@@ -113,12 +111,19 @@ export default {
 }
 
 table {
-    table-layout: fixed;
+  table-layout: fixed;
   border-collapse: collapse;
   width: 100%;
 }
 
-th,
+th {
+  top: 0;
+  position: sticky;
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: center;
+}
+
 td {
   border: 1px solid #ccc;
   padding: 8px;
