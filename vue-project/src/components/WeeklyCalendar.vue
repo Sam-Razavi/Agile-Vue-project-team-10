@@ -1,129 +1,158 @@
 <template>
-  <div>
-  
-
+    <div>
+        <div class="calendar-header">
+      <button @click="previousWeek">&lt;</button>
+      <h2>{{ startDate }} - {{ endDate }}</h2>
+      <button @click="nextWeek">&gt;</button>
+    </div>
     <h2 class="current-date text-center">{{ currentDate }}</h2>
     <div class="container">
       <div>
-        <table>
-          <thead>
-            <tr>
-              <th>Time</th>
-              <th v-for="day in days" :key="day" >{{ day.format('ddd D') }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="hour in hours" :key="hour" >
-              <td>{{ hour }}</td>
-              <td v-for="day in days" :key="day">
-                <ul>
-                  <li v-for="event in getEvents(hour, day)" :key="event.id">{{ event.name }}</li>
-                </ul>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th v-for="day in days">{{ day }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(hour, index) in hours" :key="index">
+            <td>{{ hour.time }}</td>
+            <td class="eventCell" v-for="(day, dayIndex) in days" :key="dayIndex">
+              <div v-if="hour[day]">
+                {{ hour[day].event }}
+              </div>
+              <div v-else>
+                <button class="addEvent" @click="addEvent(day, hour.time, $event.currentTarget)">Add Event</button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+</div>
   </div>
-</template>
+  </template>
 
-<script>
-import moment from 'moment'
+  <script>
+  export default {
+    data() {
+      return {
+        currentDate: new Date(),
+        days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        hours: [
+          { time: "1:00 AM" },
+          { time: "2:00 AM" },
+          { time: "3:00 AM" },
+          { time: "4:00 AM" },
+          { time: "5:00 AM" },
+          { time: "6:00 AM" },
+          { time: "7:00 AM" },
+          { time: "8:00 AM" },
+          { time: "9:00 AM" },
+          { time: "10:00 AM" },
+          { time: "11:00 AM" },
+          { time: "12:00 PM" },
+          { time: "1:00 PM" },
+          { time: "2:00 PM" },
+          { time: "3:00 PM" },
+          { time: "4:00 PM" },
+          { time: "5:00 PM" },
+          { time: "6:00 PM" },
+          { time: "7:00 PM" },
+          { time: "8:00 PM" },
+          { time: "9:00 PM" },
+          { time: "10:00 PM" },
+          { time: "11:00 PM" },
+          { time: "12:00 PM" },
+        ]
+      }
+    },
+    methods: {
+   addEvent(day, time, button) {
+  const input = document.createElement('input')
+  const buttonRect = button.getBoundingClientRect()
+  input.style.position = 'absolute'
+  input.style.top = `${buttonRect.top}px`
+  input.style.left = `${buttonRect.left}px`
+  input.style.width = `${buttonRect.width}px`
+  input.style.height = `${buttonRect.height}px`
 
-export default {
-  data() {
-    const days = []
-    const firstDayOfTheCurrentWeek = moment().weekday(1)
-    for (let i = 0; i < 7; i++) {
-        days.push(moment(firstDayOfTheCurrentWeek).add(i,'days'))
+  const hour = this.hours.find(hour => hour.time === time)
+  const cell = hour[day]
 
+  if (cell) {
+    input.value = cell.event
+  }
+
+  const saveEvent = () => {
+    const value = input.value.trim()
+
+    if (value) {
+      hour[day] = { event: value }
+    } else {
+      delete hour[day]
     }
-    return {
 
-      currentDate: moment().format("MMMM Do YYYY"),
-      days: days,
-      hours: [
-        '08:00',
-        '08:30',
-        '09:00',
-        '09:30',
-        '10:00',
-        '10:30',
-        '11:00',
-        '11:30',
-        '12:00',
-        '12:30',
-        '13:00',
-        '13:30',
-        '14:00',
-        '14:30',
-        '15:00',
-        '15:30',
-        '16:00',
-        '16:30',
-        '17:00',
-        '17:30',
-        '18:00',
-        '18:30',
-        '19:00',
-        '19:30',
-        '20:00',
-        '20:30',
-        '21:00',
-        '21:30'
-      ],
-      events: [{ id: 1, name: 'valfri event', day: 'Monday', start: '10.00', end: '11.00' }]
+    document.body.removeChild(input)
+  }
+
+  const cancelEvent = () => {
+    document.body.removeChild(input)
+  }
+
+  input.addEventListener('keydown', event => {
+    if (event.key === 'Enter') {
+      saveEvent()
+    } else if (event.key === 'Escape') {
+      cancelEvent()
     }
+  })
+
+  input.addEventListener('blur', saveEvent)
+
+
+  document.body.appendChild(input)
+  input.focus()
+
+  input.addEventListener('click', event => {
+    event.stopPropagation()
+  })
+}
+
   },
   computed: {
-    filteredEvents() {
-      const filteredEvents = {}
-
-      for (let hour of this.hours) {
-        filteredEvents[hour] = {}
-
-        for (let day of this.days) {
-          filteredEvents[hour][day] = this.events.filter((event) => {
-            return event.day === day && event.start === hour.replace(':', '')
-          })
-        }
+    startDate() {
+      let date = new Date(this.currentDate.getTime());
+      let day = date.getDay() || 7;
+      if (day !== 1) {
+        date.setHours(-24 * (day - 1));
       }
-
-      return filteredEvents
-    }
-  },
-  methods: {
-    getEvents(hour, day, weekStart) {
-      const events = this.events.filter((event) => event.day === day)
-      return events.filter((event) => {
-        const eventDate = new Date(`${weekStart} ${event.start}`)
-        const eventHour = eventDate.getHours().toString().padStart(2, '0')
-        return eventHour === hour
-      })
+      return date.toISOString().slice(0,10);
+    },
+    endDate() {
+      let date = new Date(this.currentDate.getTime());
+      let day = date.getDay() || 7;
+      if (day !== 7) {
+        date.setHours(24 * (7 - day));
+      }
+      return date.toISOString().slice(0,10);
     }
   }
-}
-</script>
-<style>
-.schedule {
+  }
+  </script>
+  <style>
+.hours {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 table {
-  table-layout: fixed;
+    table-layout: fixed;
   border-collapse: collapse;
   width: 100%;
 }
 
-th {
-  top: 0;
-  position: sticky;
-  border: 1px solid #ccc;
-  padding: 8px;
-  text-align: center;
-}
-
+th,
 td {
   border: 1px solid #ccc;
   padding: 8px;
@@ -172,5 +201,26 @@ li {
   min-width: 500px;
   max-height: 500px;
   overflow: scroll;
+}
+.eventCell {
+  position: relative;
+}
+.addEvent {
+    position: relative;
+    opacity: 0;
+    transition: box-shadow 0.5s ease-in-out,
+    background-color 0.5s ease-in-out, border-radius 0.5s ease-in-out;
+}
+.addEvent:hover {
+
+    font-weight: bold;
+    opacity: 1;
+    background: linear-gradient(
+            to bottom,
+            rgba(9, 148, 234, 0.15),
+            rgba(74, 170, 226, 0.2)
+        );
+        box-shadow: 0px 0px 20px rgba(74, 170, 226, 0.2);
+        border-radius: 16px 16px 16px 16px;
 }
 </style>
