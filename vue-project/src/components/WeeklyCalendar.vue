@@ -1,30 +1,31 @@
 <template>
-  <div>
-  
-
-    <h2 class="current-date text-center">{{ currentDate }}</h2>
-    <div class="container">
-      <div>
-        <table>
-          <thead>
-            <tr>
-              <th>Time</th>
-              <th v-for="day in days" :key="day" >{{ day.format('ddd D') }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="hour in hours" :key="hour" >
-              <td>{{ hour }}</td>
-              <td v-for="day in days" :key="day">
-                <ul>
-                  <li v-for="event in getEvents(hour, day)" :key="event.id">{{ event.name }}</li>
-                </ul>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+  <h2 class="current-date text-center">{{ currentDate }}</h2>
+  <div class="container">
+    <table>
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th v-for="day in days" :key="day">{{ day.format('ddd D') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="hour in hours" :key="hour">
+          <td>{{ hour }}</td>
+          <td v-for="day in days" :key="day">
+            <div @click="handleCellClick(day, hour)" class="cell">
+              <div v-if="editingCell === cellKey(day, hour)">
+                <form @submit.prevent="saveActivity">
+                  <label for="activity">Activity:</label>
+                  <input type="text" v-model="activity" id="activity" />
+                  <button type="submit">Save</button>
+                </form>
+              </div>
+              <div v-else>{{ activities[cellKey(day, hour)] }}</div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
@@ -36,12 +37,10 @@ export default {
     const days = []
     const firstDayOfTheCurrentWeek = moment().weekday(1)
     for (let i = 0; i < 7; i++) {
-        days.push(moment(firstDayOfTheCurrentWeek).add(i,'days'))
-
+      days.push(moment(firstDayOfTheCurrentWeek).add(i, 'days'))
     }
     return {
-
-      currentDate: moment().format("MMMM Do YYYY"),
+      currentDate: moment().format('MMMM Do YYYY'),
       days: days,
       hours: [
         '08:00',
@@ -60,52 +59,36 @@ export default {
         '14:30',
         '15:00',
         '15:30',
-        '16:00',
-        '16:30',
-        '17:00',
-        '17:30',
-        '18:00',
-        '18:30',
-        '19:00',
-        '19:30',
-        '20:00',
-        '20:30',
-        '21:00',
-        '21:30'
+        '16:00'
       ],
-      events: [{ id: 1, name: 'valfri event', day: 'Monday', start: '10.00', end: '11.00' }]
-    }
-  },
-  computed: {
-    filteredEvents() {
-      const filteredEvents = {}
-
-      for (let hour of this.hours) {
-        filteredEvents[hour] = {}
-
-        for (let day of this.days) {
-          filteredEvents[hour][day] = this.events.filter((event) => {
-            return event.day === day && event.start === hour.replace(':', '')
-          })
-        }
-      }
-
-      return filteredEvents
+      activities: {},
+      editingCell: null,
+      activity: ''
     }
   },
   methods: {
-    getEvents(hour, day, weekStart) {
-      const events = this.events.filter((event) => event.day === day)
-      return events.filter((event) => {
-        const eventDate = new Date(`${weekStart} ${event.start}`)
-        const eventHour = eventDate.getHours().toString().padStart(2, '0')
-        return eventHour === hour
-      })
+    handleCellClick(day, hour) {
+      this.editingCell = this.cellKey(day, hour)
+    },
+    saveActivity() {
+      this.activities[this.editingCell] = this.activity
+      this.activity = ''
+      this.editingCell = null
+    },
+    cellKey(day, hour) {
+      return `${day.format('YYYY-MM-DD')} ${hour}`
     }
   }
 }
 </script>
+
 <style>
+.cell {
+  height: 50px;
+  width: 100px;
+  padding: 5px;
+  margin: 5px;
+}
 .schedule {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
