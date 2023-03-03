@@ -1,6 +1,10 @@
 <template>
   <h2 class="current-date text-center">{{ currentDate }}</h2>
   <div class="container">
+    <div class="btn-group">
+      <button @click="viewPreviousWeek">Previous Week</button>
+      <button @click="viewNextWeek">Next Week</button>
+    </div>
     <table>
       <thead>
         <tr>
@@ -34,11 +38,7 @@ import moment from 'moment'
 
 export default {
   data() {
-    const days = []
-    const firstDayOfTheCurrentWeek = moment().weekday(1)
-    for (let i = 0; i < 7; i++) {
-      days.push(moment(firstDayOfTheCurrentWeek).add(i, 'days'))
-    }
+    const days = this.getWeekDays(moment())
     return {
       currentDate: moment().format('MMMM Do YYYY'),
       days: days,
@@ -77,6 +77,22 @@ export default {
     },
     cellKey(day, hour) {
       return `${day.format('YYYY-MM-DD')} ${hour}`
+    },
+    getWeekDays(date) {
+      const days = []
+      const startOfWeek = moment(date).weekday(1)
+      for (let i = 0; i < 7; i++) {
+        days.push(moment(startOfWeek).add(i, 'days'))
+      }
+      return days
+    },
+    viewPreviousWeek() {
+      const previousWeek = moment(this.days[0]).subtract(1, 'week')
+      this.days = this.getWeekDays(previousWeek)
+    },
+    viewNextWeek() {
+      const nextWeek = moment(this.days[6]).add(1, 'day')
+      this.days = this.getWeekDays(nextWeek)
     }
   }
 }
