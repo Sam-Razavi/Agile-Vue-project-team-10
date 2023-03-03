@@ -1,6 +1,7 @@
 <template>
     <div>
         <div class="calendar-header">
+        <!-- Where it shows the start and the end of the week -->
       <button @click="previousWeek">&lt;</button>
       <h2>{{ startDate }} - {{ endDate }}</h2>
       <button @click="nextWeek">&gt;</button>
@@ -41,7 +42,9 @@
     data() {
       return {
         currentDate: new Date(),
+        //Days of the week
         days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        //Time slots
         hours: [
           { time: "1:00 AM" },
           { time: "2:00 AM" },
@@ -71,9 +74,13 @@
       }
     },
     methods: {
+        //Method for the button that adds events
    addEvent(day, time, button) {
+    //Creating an input element
   const input = document.createElement('input')
+  //Getting the position of the button so we can put the input element in it's place
   const buttonRect = button.getBoundingClientRect()
+  //styling the input element
   input.style.position = 'absolute'
   input.style.top = `${buttonRect.top}px`
   input.style.left = `${buttonRect.left}px`
@@ -102,7 +109,7 @@
   const cancelEvent = () => {
     document.body.removeChild(input)
   }
-
+// Pushing ENTER saves the date and pushing ESCAPE cancels it
   input.addEventListener('keydown', event => {
     if (event.key === 'Enter') {
       saveEvent()
@@ -110,7 +117,7 @@
       cancelEvent()
     }
   })
-
+// blur functions in the matter that if you click outside the cell it will save the event
   input.addEventListener('blur', saveEvent)
 
 
@@ -123,6 +130,7 @@
 }
 
   },
+  //Functions for creating start of the week and the end of it
   computed: {
     startDate() {
       let date = new Date(this.currentDate.getTime());
@@ -142,7 +150,7 @@
     }
   },
   created() {
-    // Created function that loads the data we have from the local storage
+    // Created function that loads the data that we have from the local storage
     const savedData = JSON.parse(localStorage.getItem("calendarData"));
     //Converting back to object
     if (savedData) {
