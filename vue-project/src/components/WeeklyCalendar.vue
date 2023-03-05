@@ -44,6 +44,7 @@
         currentDate: new Date(),
         //Days of the week
         days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        events: [],
         //Time slots
         hours: [
           { time: "1:00 AM" },
@@ -73,9 +74,14 @@
         ]
       }
     },
+    mounted() {
+    // retrieve events from local storage when component is mounted
+    const storedEvents = JSON.parse(localStorage.getItem('events')) || []
+    this.events = storedEvents
+  },
     methods: {
         //Method for the button that adds events
-   addEvent(day, time, button) {
+  addEvent(day, time, button) {
     //Creating an input element
   const input = document.createElement('input')
   //Getting the position of the button so we can put the input element in it's place
@@ -93,17 +99,26 @@
   if (cell) {
     input.value = cell.event
   }
-
+//we create a function for saving the events. adding trim will eliminate any spaces before and after a text
   const saveEvent = () => {
     const value = input.value.trim()
 
     if (value) {
-      hour[day] = { event: value }
+      hour[day].event = value
+      const eventIndex = this.events.findIndex(event => event.time === time && event.day === day)
+      if (eventIndex !== -1) {
+            this.events[eventIndex].event = value
+          }
     } else {
       delete hour[day]
+      const eventIndex = this.events.findIndex(event => event.time === time && event.day === day)
+      if (eventIndex !== -1) {
+            this.events.splice(eventIndex, 1)
+          }
     }
 
     document.body.removeChild(input)
+    localStorage.setItem('events', JSON.stringify(this.events))
   }
 
   const cancelEvent = () => {
@@ -127,9 +142,15 @@
   input.addEventListener('click', event => {
     event.stopPropagation()
   })
-}
-
+},
+previousWeek() {
+      this.currentDate.setDate(this.currentDate.getDate() - 7)
+    },
+    nextWeek() {
+      this.currentDate.setDate(this.currentDate.getDate() + 7)
+    }
   },
+
   //Functions for creating start of the week and the end of it
   computed: {
     startDate() {
@@ -191,7 +212,7 @@
   }
 };
   </script>
-  <style>
+  <style scoped>
 .hours {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
