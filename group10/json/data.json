@@ -6,6 +6,41 @@
     "start": "2023-03-03",
     "end": "2023-03-03",
     "allDay": true
+},
+{
+    "id":"2",
+    "title": "Mitt födelsedagskalas",
+    "start": "2023-03-11",
+    "end": "2023-03-11T24:00:00",
+    "allDay": true
+},
+{
+    "id":"3",
+    "title": "Semester",
+    "start": "2023-03-11",
+    "end": "2023-03-16",
+    "allDay": true
+},
+{
+    "id":"4",
+    "title": "Läkarbesök",
+    "start": "2023-03-23",
+    "end": "2023-03-23",
+    "allDay": true
+},
+{
+    "id":"5",
+    "title": "Åka till landet",
+    "start": "2023-03-24",
+    "end": "2023-03-26",
+    "allDay": true
+},
+{
+    "id":"6",
+    "title": "Bilverkstaden",
+    "start": "2023-03-28",
+    "end": "2023-03-28",
+    "allDay": true
 }
 ]
 }

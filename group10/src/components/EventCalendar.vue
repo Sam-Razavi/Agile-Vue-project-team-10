@@ -8,8 +8,8 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import listPlugin from '@fullcalendar/list'
 import interactionPlugin from '@fullcalendar/interaction'
 
-// 10st förinlagda Kalender händelser, därav (10), så börjar nya inlägg med id från 11
-const id = ref (10)
+// 6st förinlagda Kalender händelser, därav (10), så börjar nya inlägg med id från 11
+const id = ref (6)
 //Variabel döpt options, med knappar att välja att visa olika vyer av kalendern, samt vart på sidan knapparna ska ligga
 const options = reactive ({
     plugins:[dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin],
