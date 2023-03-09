@@ -1,35 +1,42 @@
 <template>
   <h2 class="current-date text-center">{{ currentDate }}</h2>
+  <div class="btn-group">
+    <button @click="viewPreviousWeek">Previous Week</button>
+    <button @click="viewNextWeek">Next Week</button>
+  </div>
   <div class="container">
-    <div class="btn-group">
-      <button @click="viewPreviousWeek">Previous Week</button>
-      <button @click="viewNextWeek">Next Week</button>
-    </div>
     <table>
       <thead>
         <tr>
           <th>Time</th>
-          <th v-for="day in days" :key="day">{{ day.format('ddd D') }}</th>
+          <th v-for="day in days" :key="day">{{ day.format('ddd D MMM') }}</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="hour in hours" :key="hour">
           <td>{{ hour }}</td>
-          <td v-for="day in days" :key="day">
-            <div @click="handleCellClick(day, hour)" class="cell">
-              <div v-if="editingCell === cellKey(day, hour)">
-                <form @submit.prevent="saveActivity">
-                  <label for="activity">Activity:</label>
-                  <input type="text" v-model="activity" id="activity" />
-                  <button type="submit">Save</button>
-                </form>
-              </div>
-              <div v-else>{{ activities[cellKey(day, hour)] }}</div>
-            </div>
+          <td
+            v-for="day in days"
+            :key="day"
+            :class="{ activeCell: editingCell === cellKey(day, hour) }"
+          >
+            <!-- Add multiple events in the same cell-->
+            <p v-for="event in activities[cellKey(day, hour)]" :key="event">
+              {{ event }}
+            </p>
+
+            <div @click="handleCellClick(day, hour)" class="cell"></div>
           </td>
         </tr>
       </tbody>
     </table>
+  </div>
+  <div v-if="editingCell">
+    <form @submit.prevent="saveActivity">
+      <label for="activity">Activity:</label>
+      <input type="text" v-model="activity" id="activity" />
+      <button type="submit">Save</button>
+    </form>
   </div>
 </template>
 
@@ -68,10 +75,18 @@ export default {
   },
   methods: {
     handleCellClick(day, hour) {
-      this.editingCell = this.cellKey(day, hour)
+      if (this.editingCell === this.cellKey(day, hour)) {
+        this.editingCell = null
+      } else {
+        this.editingCell = this.cellKey(day, hour)
+      }
     },
     saveActivity() {
-      this.activities[this.editingCell] = this.activity
+      if (this.activities[this.editingCell]) {
+        this.activities[this.editingCell].push(this.activity)
+      } else {
+        this.activities[this.editingCell] = [this.activity]
+      }
       this.activity = ''
       this.editingCell = null
     },
@@ -99,6 +114,9 @@ export default {
 </script>
 
 <style>
+.activeCell {
+  border: 2px solid red;
+}
 .cell {
   height: 50px;
   width: 100px;
