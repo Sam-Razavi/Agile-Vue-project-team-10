@@ -149,6 +149,14 @@
     event.stopPropagation()
   })
 },
+getWeekDays(date) {
+      const days = []
+      const startOfWeek = moment(date).weekday(1)
+      for (let i = 0; i < 7; i++) {
+        days.push(moment(startOfWeek).add(i, 'days'))
+      }
+      return days
+    },
 viewPreviousWeek() {
       const previousWeek = moment(this.days[0]).subtract(1, 'week')
       this.days = this.getWeekDays(previousWeek)
