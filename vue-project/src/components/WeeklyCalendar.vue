@@ -6,7 +6,7 @@
       <h2>{{ startDate }} - {{ endDate }}</h2>
     <button @click="viewNextWeek">Next Week</button>
     </div>
-    <h2 class="current-date text-center">{{ currentDate }}</h2>
+    <h2 class="current-date text-center">{{ TodaysDate }}</h2>
 
     <h2 class ="week-number"> Week {{ currentWeekNumber }}</h2>
     <div class="container">
@@ -45,7 +45,8 @@
   export default {
     data() {
       return {
-        currentDate: moment().format('YYYY-MM-DD'),
+        TodaysDate: moment().format('MMMM Do YYYY'),
+        currentDate: new Date(),
         currentWeekNumber: null,
         //Days of the week
         days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
@@ -156,12 +157,7 @@ viewPreviousWeek() {
       const nextWeek = moment(this.days[6]).add(1, 'day')
       this.days = this.getWeekDays(nextWeek)
     },
-    previousWeek() {
-      this.currentDate.setDate(this.currentDate.getDate() - 7)
-    },
-    nextWeek() {
-      this.currentDate.setDate(this.currentDate.getDate() + 7)
-    },
+
     getWeekNumber(date) {
       // Get the first day of the year
       const firstDayOfYear = new Date(date.getFullYear(), 0, 1)
