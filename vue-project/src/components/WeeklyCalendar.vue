@@ -2,9 +2,9 @@
     <div>
         <div class="calendar-header">
         <!-- Where it shows the start and the end of the week -->
-      <button @click="previousWeek">&lt;</button>
+      <button @click="viewPreviousWeek">Previous Week</button>
       <h2>{{ startDate }} - {{ endDate }}</h2>
-      <button @click="nextWeek">&gt;</button>
+    <button @click="viewNextWeek">Next Week</button>
     </div>
     <h2 class="current-date text-center">{{ currentDate }}</h2>
     <div class="container">
@@ -143,7 +143,15 @@
     event.stopPropagation()
   })
 },
-previousWeek() {
+viewPreviousWeek() {
+      const previousWeek = moment(this.days[0]).subtract(1, 'week')
+      this.days = this.getWeekDays(previousWeek)
+    },
+    viewNextWeek() {
+      const nextWeek = moment(this.days[6]).add(1, 'day')
+      this.days = this.getWeekDays(nextWeek)
+    },
+    previousWeek() {
       this.currentDate.setDate(this.currentDate.getDate() - 7)
     },
     nextWeek() {
@@ -210,7 +218,8 @@ previousWeek() {
       }
     }
   }
-};
+
+  };
   </script>
   <style scoped>
 .hours {
