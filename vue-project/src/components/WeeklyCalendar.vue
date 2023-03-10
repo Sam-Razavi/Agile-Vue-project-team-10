@@ -7,6 +7,8 @@
     <button @click="viewNextWeek">Next Week</button>
     </div>
     <h2 class="current-date text-center">{{ currentDate }}</h2>
+
+    <h2 class ="week-number"> Week {{ currentWeekNumber }}</h2>
     <div class="container">
       <div>
       <table>
@@ -38,10 +40,13 @@
   </template>
 
   <script>
+  import moment from 'moment'
+
   export default {
     data() {
       return {
-        currentDate: new Date(),
+        currentDate: moment().format('YYYY-MM-DD'),
+        currentWeekNumber: null,
         //Days of the week
         days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
         events: [],
@@ -156,7 +161,18 @@ viewPreviousWeek() {
     },
     nextWeek() {
       this.currentDate.setDate(this.currentDate.getDate() + 7)
+    },
+    getWeekNumber(date) {
+      // Get the first day of the year
+      const firstDayOfYear = new Date(date.getFullYear(), 0, 1)
+      // Calculate the number of days between the given date and the first day of the year
+      const diff = date.getTime() - firstDayOfYear.getTime()
+      // Calculate the number of weeks since the first day of the year
+      const weekNumber = Math.ceil(diff / (1000 * 60 * 60 * 24 * 7))
+      return weekNumber
     }
+
+
   },
 
   //Functions for creating start of the week and the end of it
@@ -186,7 +202,8 @@ viewPreviousWeek() {
         //We load the saved data "currentDate" and "hours"
       this.currentDate = new Date(savedData.currentDate);
       this.hours = savedData.hours;
-    }
+    };
+    this.currentWeekNumber = this.getWeekNumber(new Date());
   },
   watch: {
     //Adding a watcher so it saves the data automatically everytime it changes
@@ -302,5 +319,11 @@ li {
         );
         box-shadow: 0px 0px 20px rgba(74, 170, 226, 0.2);
         border-radius: 16px 16px 16px 16px;
+}
+
+.week-number{
+    display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
