@@ -16,7 +16,9 @@
           <tr>
             <th>Time</th>
             <!-- Column for each day in the day object -->
-            <th v-for="day in days" :key="day">{{ day }}</th>
+            <th v-for="(day, index) in days" :key="day" :class="{ 'today': moment().add(index, 'days').isSame(moment(), 'day') }">
+  {{ moment().add(index, 'days').format('MMM DD') }}
+</th>
           </tr>
         </thead>
         <tbody>
@@ -44,12 +46,14 @@
 
   export default {
     data() {
+        const days = this.getWeekDays(moment())
       return {
         TodaysDate: moment().format('MMMM Do YYYY'),
         currentDate: new Date(),
         currentWeekNumber: null,
+        moment: moment,
         //Days of the week
-        days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        days: days,
         events: [],
         //Time slots
         hours: [
@@ -106,30 +110,31 @@
     input.value = cell.event
   }
 //we create a function for saving the events. adding trim will eliminate any spaces before and after a text
-  const saveEvent = () => {
-    const value = input.value.trim()
+const saveEvent = () => {
+  const value = input.value.trim()
 
-    if (value) {
+  if (value) {
       hour[day].event = value
       const eventIndex = this.events.findIndex(event => event.time === time && event.day === day)
       if (eventIndex !== -1) {
             this.events[eventIndex].event = value
           }
-    } else {
-      delete hour[day]
-      const eventIndex = this.events.findIndex(event => event.time === time && event.day === day)
-      if (eventIndex !== -1) {
-            this.events.splice(eventIndex, 1)
-          }
+  } else {
+    delete hour[day]
+    const eventIndex = this.events.findIndex(event => event.time === time && event.day === day)
+    if (eventIndex !== -1) {
+      this.events.splice(eventIndex, 1)
     }
-
-    document.body.removeChild(input)
-    localStorage.setItem('events', JSON.stringify(this.events))
   }
+
+  document.body.removeChild(input)
+  localStorage.setItem('events', JSON.stringify(this.events))
+}
 
   const cancelEvent = () => {
-    document.body.removeChild(input)
-  }
+  document.body.removeChild(input)
+  delete hour[day]
+}
 // Pushing ENTER saves the date and pushing ESCAPE cancels it
   input.addEventListener('keydown', event => {
     if (event.key === 'Enter') {
@@ -330,4 +335,9 @@ li {
   justify-content: center;
   align-items: center;
 }
+
+.today {
+  background-color: #999393;
+}
+
 </style>
