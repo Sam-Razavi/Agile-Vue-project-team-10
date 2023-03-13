@@ -1,44 +1,53 @@
 <template>
     <div>
-        <div class="calendar-header">
+      <div class="calendar-header">
         <!-- Where it shows the start and the end of the week -->
-      <button @click="viewPreviousWeek">Previous Week</button>
-      <h2>{{ startDate }} - {{ endDate }}</h2>
-    <button @click="viewNextWeek">Next Week</button>
-    </div>
-    <h2 class="current-date text-center">{{ TodaysDate }}</h2>
+        <button @click="viewPreviousWeek">Previous Week</button>
+        <h2>{{ startDate }} - {{ endDate }}</h2>
+        <button @click="viewNextWeek">Next Week</button>
+      </div>
+      <h2 class="current-date text-center">{{ TodaysDate }}</h2>
 
-    <h2 class ="week-number"> Week {{ currentWeekNumber }}</h2>
-    <div class="container">
-      <div>
-      <table>
-        <thead>
-          <tr>
-            <th>Time</th>
-            <!-- Column for each day in the day object -->
-            <th v-for="(day, index) in days" :key="day" :class="{ 'today': moment().add(index, 'days').isSame(moment(), 'day') }">
-  {{ moment().add(index, 'days').format('MMM DD') }}
-</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(hour, index) in hours" :key="index">
-            <td>{{ hour.time }}</td>
-            <td class="eventCell" v-for="(day, dayIndex) in days" :key="dayIndex">
-              <div v-if="hour[day]">
-                {{ hour[day].event }}
-              </div>
-              <div v-else>
-              <!-- Creating a button for adding events -->
-                <button class="addEvent" @click="addEvent(day, hour.time, $event.currentTarget)">Add Event</button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <h2 class="week-number"> Week {{ currentWeekNumber }}</h2>
+      <div class="container">
+        <div>
+          <table>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <!-- Column for each day in the day object -->
+                <th
+                  v-for="(day, index) in days"
+                  :key="day"
+                  :class="{
+                    today: moment().add(index, 'days').isSame(moment(), 'day'),
+                  }"
+                >
+                  {{ moment().add(index, 'days').format('MMM DD') }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(hour, index) in hours" :key="index">
+                <td>{{ hour.time }}</td>
+                <td class="eventCell" v-for="(day, dayIndex) in days" :key="dayIndex">
+                  <div v-if="hour[day]">
+                    {{ hour[day].event }}
+                    <button class="deleteButton" @click="deleteEvent(day, hour.time)">Delete</button>
+                  </div>
+                  <div v-else>
+                    <!-- Creating a button for adding events -->
+                    <button class="addEvent" @click="addEvent(day, hour.time, $event.currentTarget)">
+                      Add Event
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
-</div>
-  </div>
   </template>
 
   <script>
@@ -55,6 +64,7 @@
         //Days of the week
         days: days,
         events: [],
+      eventName: '',
         //Time slots
         hours: [
           { time: "1:00 AM" },
@@ -91,9 +101,11 @@
   },
     methods: {
         //Method for the button that adds events
-  addEvent(day, time, button) {
-    //Creating an input element
-  const input = document.createElement('input')
+        addEvent(day, time, button) {
+  //Creating an input element
+  const input = document.createElement('input');
+  input.id = 'myInput';
+
   //Getting the position of the button so we can put the input element in it's place
   const buttonRect = button.getBoundingClientRect()
   //styling the input element
@@ -109,33 +121,40 @@
   if (cell) {
     input.value = cell.event
   }
-//we create a function for saving the events. adding trim will eliminate any spaces before and after a text
-const saveEvent = () => {
-  const value = input.value.trim()
 
-  if (value) {
-      hour[day].event = value
-      const eventIndex = this.events.findIndex(event => event.time === time && event.day === day)
-      if (eventIndex !== -1) {
-            this.events[eventIndex].event = value
-          }
-  } else {
-    delete hour[day]
-    const eventIndex = this.events.findIndex(event => event.time === time && event.day === day)
-    if (eventIndex !== -1) {
-      this.events.splice(eventIndex, 1)
-    }
+  const saveEvent = () => {
+    if (input.value.trim() !== '') {
+      hour[day] = { event: input.value.trim() }
+      const events = JSON.parse(localStorage.getItem('events')) || []
+      const eventIndex = events.findIndex(event => event.day === day && event.time === time)
+  if (eventIndex > -1) {
+    events.splice(eventIndex, 1)
+    localStorage.setItem('events', JSON.stringify(events))
   }
 
-  document.body.removeChild(input)
-  localStorage.setItem('events', JSON.stringify(this.events))
-}
+      events.push({
+        day,
+        time,
+        event: input.value.trim(),
+      })
+      localStorage.setItem('events', JSON.stringify(events))
+    }
+    document.body.removeChild(input)
+  }
 
   const cancelEvent = () => {
   document.body.removeChild(input)
   delete hour[day]
+  const events = JSON.parse(localStorage.getItem('events')) || []
+  const eventIndex = events.findIndex(event => event.day === day && event.time === time)
+  if (eventIndex > -1) {
+    events.splice(eventIndex, 1)
+    localStorage.setItem('events', JSON.stringify(events))
+  }
 }
-// Pushing ENTER saves the date and pushing ESCAPE cancels it
+
+
+  // Pushing ENTER saves the date and pushing ESCAPE cancels it
   input.addEventListener('keydown', event => {
     if (event.key === 'Enter') {
       saveEvent()
@@ -143,17 +162,18 @@ const saveEvent = () => {
       cancelEvent()
     }
   })
-// blur functions in the matter that if you click outside the cell it will save the event
-  input.addEventListener('blur', saveEvent)
 
-
+  // Append the input element to the body
   document.body.appendChild(input)
-  input.focus()
 
-  input.addEventListener('click', event => {
-    event.stopPropagation()
-  })
+  // Focus the input element
+  input.focus()
 },
+deleteEvent(day, time) {
+  const hour = this.hours.find(hour => hour.time === time)
+  delete hour[day]
+},
+
 getWeekDays(date) {
       const days = []
       const startOfWeek = moment(date).weekday(1)
@@ -204,15 +224,11 @@ viewPreviousWeek() {
     }
   },
   created() {
-    // Created function that loads the data that we have from the local storage
-    const savedData = JSON.parse(localStorage.getItem("calendarData"));
-    //Converting back to object
-    if (savedData) {
-        //We load the saved data "currentDate" and "hours"
-      this.currentDate = new Date(savedData.currentDate);
-      this.hours = savedData.hours;
-    };
-    this.currentWeekNumber = this.getWeekNumber(new Date());
+        this.currentWeekNumber = this.getWeekNumber(new Date());
+        const storedEvents = localStorage.getItem('events');
+    if (storedEvents) {
+      this.events = JSON.parse(storedEvents);
+    }
   },
   watch: {
     //Adding a watcher so it saves the data automatically everytime it changes
@@ -337,7 +353,26 @@ li {
 }
 
 .today {
-  background-color: #999393;
+  background-color: #46d9ec;
 }
 
+.deleteButton{
+    position:ripple="false";
+    opacity: 0;
+    transition: box-shadow 0.5s ease-in-out,
+    background-color 0.5s ease-in-out, border-radius 0.5s ease-in-out;
+}
+
+.deleteButton:hover {
+    font-weight: bold;
+    opacity: 1;
+    background: linear-gradient(
+            to bottom,
+            rgba(9, 148, 234, 0.15),
+            rgba(74, 170, 226, 0.2)
+        );
+        box-shadow: 0px 0px 20px rgba(74, 170, 226, 0.2);
+        border-radius: 16px 16px 16px 16px;
+
+}
 </style>
