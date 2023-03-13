@@ -7,10 +7,12 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import listPlugin from '@fullcalendar/list'
 import interactionPlugin from '@fullcalendar/interaction'
+import useEvents from '../composables/useEvents.js'
 
-// 6st förinlagda Kalender händelser, därav (10), så börjar nya inlägg med id från 11
+// 6st förinlagda Kalender händelser, därav (6), så nya inlägg börjar med id från 7
 const id = ref (6)
-//Variabel döpt options, med knappar att välja att visa olika vyer av kalendern, samt vart på sidan knapparna ska ligga
+const { getEvents, createEvent, updateEvent, destroyEvent } = useEvents()
+//Variabel döpt options, med plugin knappar att välja att visa olika vyer av kalendern, samt vart på sidan knapparna ska ligga
 const options = reactive ({
     plugins:[dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin],
     initalView: 'dayGridMonth',
@@ -37,10 +39,39 @@ const options = reactive ({
             allDay: true
         })
     },
-    eventClick: (arg) => {
-console.log(arg.event.title)
+    eventClick: (arg) =>{
+        if(arg.event){
+            arg.event.remove()
+        }
+    },
+    events: [],
+eventAdd: (arg) => {
+createEvent ({
+    id: arg.event.id,
+    title: arg.event.title,
+    start: arg.event.start,
+    end: arg.event.end,
+    allDay: arg.event.allDay
+})
+},
+eventChange: (arg) => {
+updateEvent ({
+    id: arg.event.id,
+    title: arg.event.title,
+    start: arg.event.start,
+    end: arg.event.end,
+    allDay: arg.event.allDay
+}, arg.event.id)
+},
+eventRemove: (arg) => {
+destroyEvent(arg.event.id)
 }
 })
+options.events = getEvents.value
+watch(getEvents, () => {
+    options.events = getEvents.value
+}
+)
 </script>
 
 <template>
