@@ -6,12 +6,12 @@
         <h2>{{ startDate }} - {{ endDate }}</h2>
         <button @click="viewNextWeek">Next Week</button>
       </div>
-      <h2 class="current-date text-center">{{ TodaysDate }}</h2>
+      <h2 class="current-date text-center">{{ todaysDate }}</h2>
 
       <h2 class="week-number"> Week {{ currentWeekNumber }}</h2>
       <div class="container">
         <div>
-          <table>
+          <table id="eventsTable">
             <thead>
               <tr>
                 <th>Time</th>
@@ -43,12 +43,19 @@
                   </div>
                 </td>
               </tr>
+              <tr v-for="(event, index) in events" :key="index">
+                <td>{{ event.day}}</td>
+                <td v-for="(day, dayIndex) in days" :key="dayIndex">
+                  {{ event.event }}
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
       </div>
     </div>
   </template>
+
 
   <script>
   import moment from 'moment'
@@ -57,14 +64,18 @@
     data() {
         const days = this.getWeekDays(moment())
       return {
-        TodaysDate: moment().format('MMMM Do YYYY'),
+        todaysDate: moment().format('MMMM Do YYYY'),
         currentDate: new Date(),
         currentWeekNumber: null,
+        selectedCell: null,
         moment: moment,
         //Days of the week
         days: days,
+        day: '',
+        time: '',
+        event: '',
         events: [],
-      eventName: '',
+
         //Time slots
         hours: [
           { time: "1:00 AM" },
@@ -104,7 +115,7 @@
         addEvent(day, time, button) {
   //Creating an input element
   const input = document.createElement('input');
-  input.id = 'myInput';
+  input.id = 'events';
 
   //Getting the position of the button so we can put the input element in it's place
   const buttonRect = button.getBoundingClientRect()
@@ -169,6 +180,8 @@
   // Focus the input element
   input.focus()
 },
+
+
 deleteEvent(day, time) {
   const hour = this.hours.find(hour => hour.time === time)
   delete hour[day]
@@ -199,7 +212,10 @@ viewPreviousWeek() {
       // Calculate the number of weeks since the first day of the year
       const weekNumber = Math.ceil(diff / (1000 * 60 * 60 * 24 * 7))
       return weekNumber
-    }
+    },
+
+
+
 
 
   },
@@ -224,12 +240,22 @@ viewPreviousWeek() {
     }
   },
   created() {
-        this.currentWeekNumber = this.getWeekNumber(new Date());
-        const storedEvents = localStorage.getItem('events');
-    if (storedEvents) {
-      this.events = JSON.parse(storedEvents);
-    }
-  },
+  this.currentWeekNumber = this.getWeekNumber(new Date());
+
+  const events = JSON.parse(localStorage.getItem("events")) || [];
+  this.events = events;
+
+  const displayEvents = () => {
+    events.forEach((event) => {
+      console.log(`${event.day} at ${event.time}: ${event.event}`);
+    });
+  };
+
+  window.addEventListener('load', displayEvents);
+},
+
+
+
   watch: {
     //Adding a watcher so it saves the data automatically everytime it changes
     currentDate: {
