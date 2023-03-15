@@ -11,6 +11,12 @@
   },
   "dependencies": {
     "bootstrap": "^5.2.3",
+    "@fullcalendar/core": "^6.1.4",
+    "@fullcalendar/daygrid": "^6.1.4",
+    "@fullcalendar/interaction": "^6.1.4",
+    "@fullcalendar/list": "^6.1.4",
+    "@fullcalendar/timegrid": "^6.1.4",
+    "@fullcalendar/vue3": "^6.1.4",
     "moment": "^2.29.4",
     "pinia": "^2.0.32",
     "vue": "^3.2.47",
