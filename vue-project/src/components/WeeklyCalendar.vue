@@ -1,10 +1,11 @@
 <template>
   <h2 class="current-date text-center">{{ currentDate }}</h2>
-  <div class="btn-group">
-    <button @click="viewPreviousWeek">Previous Week</button>
-    <button @click="viewNextWeek">Next Week</button>
-  </div>
+
   <div class="container">
+    <div class="btn-group">
+      <button @click="viewPreviousWeek">Previous Week</button>
+      <button @click="viewNextWeek">Next Week</button>
+    </div>
     <table>
       <thead>
         <tr>
@@ -21,18 +22,26 @@
             :class="{ activeCell: editingCell === cellKey(day, hour) }"
           >
             <!-- Add multiple events in the same cell-->
-            <p v-for="event in activities[cellKey(day, hour)]" :key="event">
-              {{ event }}
+            <p
+              v-for="activity in activities[cellKey(day, hour)]"
+              :key="activity.activity"
+              :style="getActivityStyle(activity)"
+            >
+              {{ activity.activity }}
             </p>
-
-            <div @click="handleCellClick(day, hour)" class="cell"></div>
+            <!-- colspan gör så att man kan span över flera element/celler -->
+            <div
+              @click="handleCellClick(day, hour)"
+              :colspan="getColspan(day, hour)"
+              class="cell"
+            ></div>
           </td>
         </tr>
       </tbody>
     </table>
   </div>
   <div v-if="editingCell">
-    <form @submit.prevent="saveActivity">
+    <form @submit.prevent="saveActivity" class="save-activity">
       <label for="activity">Activity:</label>
       <input type="text" v-model="activity" id="activity" />
       <button type="submit">Save</button>
@@ -82,13 +91,43 @@ export default {
       }
     },
     saveActivity() {
+      const duration = parseInt(prompt('Enter duration in hours:'))
+      if (isNaN(duration)) {
+        alert('Duration must be a number')
+        return
+      }
       if (this.activities[this.editingCell]) {
-        this.activities[this.editingCell].push(this.activity)
+        this.activities[this.editingCell].push({
+          activity: this.activity,
+          duration: duration
+        })
       } else {
-        this.activities[this.editingCell] = [this.activity]
+        this.activities[this.editingCell] = [{ activity: this.activity, duration: duration }]
       }
       this.activity = ''
       this.editingCell = null
+    },
+    getColspan(day, hour) {
+      const key = this.cellKey(day, hour)
+      const activities = this.activities[key]
+      if (!activities) {
+        return 1
+      }
+      let totalDuration = 0
+      for (const activity of activities) {
+        totalDuration += activity.duration
+      }
+      return totalDuration / 0.5
+    },
+    getActivityStyle(activity) {
+      const height = activity.duration * 50 - 10
+      return {
+        backgroundColor: 'green',
+        borderRadius: '5px',
+        padding: '5px',
+        color: '#fff',
+        height: `${height}px`
+      }
     },
     cellKey(day, hour) {
       return `${day.format('YYYY-MM-DD')} ${hour}`
@@ -114,7 +153,19 @@ export default {
 </script>
 
 <style>
+table tbody td p {
+  color: green;
+  border: 1px solid green;
+  border-radius: 5px;
+  padding: 5px;
+}
+.save-activity {
+  margin-top: 2rem;
+  text-align: center;
+}
+
 .activeCell {
+  overflow: scroll;
   border: 2px solid red;
 }
 .cell {
@@ -122,6 +173,7 @@ export default {
   width: 100px;
   padding: 5px;
   margin: 5px;
+  overflow: scroll;
 }
 .schedule {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -142,6 +194,7 @@ th {
 }
 
 td {
+  overflow: scroll;
   border: 1px solid #ccc;
   padding: 8px;
   text-align: center;
