@@ -11,7 +11,7 @@ import {  RouterView } from 'vue-router'
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav">
       <li class="nav-item active">
-        <a class="nav-link" href="#">Home </a>
+        <router-link to="/">Vecko vy</router-link>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="#">About</a>

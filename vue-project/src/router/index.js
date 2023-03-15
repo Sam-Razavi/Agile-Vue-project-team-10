@@ -20,7 +20,7 @@ const router = createRouter({
     {
       path: '/MonthlyCalendar',
       name: 'MonthlyCalendar',
-      component: () => import('../components/MonthlyCalendar.vue')
+      component: () => import('../components/MonthlyApp.vue')
     }
   ]
 })
