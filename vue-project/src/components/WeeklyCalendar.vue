@@ -1,11 +1,14 @@
 <template>
-    <div>
+    <div :class="{ 'dark-mode': isDarkMode }">
       <div class="calendar-header">
         <!-- Where it shows the start and the end of the week -->
         <button @click="viewPreviousWeek">Previous Week</button>
         <h2>{{ startDate }} - {{ endDate }}</h2>
         <button @click="viewNextWeek">Next Week</button>
+
+
       </div>
+      <button @click="isDarkMode = !isDarkMode">Toggle Dark Mode</button>
       <h2 class="current-date text-center">{{ todaysDate }}</h2>
 
       <h2 class="week-number"> Week {{ currentWeekNumber }}</h2>
@@ -44,7 +47,7 @@
                 </td>
               </tr>
               <tr v-for="(event, index) in events" :key="index">
-                <td>{{ event.day}}</td>
+                <td>{{ event.time}}</td>
                 <td v-for="(day, dayIndex) in days" :key="dayIndex">
                   {{ event.event }}
                 </td>
@@ -52,6 +55,7 @@
             </tbody>
           </table>
         </div>
+        <button class="delete-all" @click="deleteAll">Dlete all</button>
       </div>
     </div>
   </template>
@@ -75,6 +79,7 @@
         time: '',
         event: '',
         events: [],
+        isDarkMode: false,
 
         //Time slots
         hours: [
@@ -213,8 +218,9 @@ viewPreviousWeek() {
       const weekNumber = Math.ceil(diff / (1000 * 60 * 60 * 24 * 7))
       return weekNumber
     },
-
-
+deleteAll () {
+    localStorage.clear ();
+},
 
 
 
@@ -237,7 +243,7 @@ viewPreviousWeek() {
         date.setHours(24 * (7 - day));
       }
       return date.toISOString().slice(0,10);
-    }
+    },
   },
   created() {
   this.currentWeekNumber = this.getWeekNumber(new Date());
@@ -401,4 +407,10 @@ li {
         border-radius: 16px 16px 16px 16px;
 
 }
+
+.dark-mode {
+  background-color: #1c1c1c;
+  color: #fff;
+}
+
 </style>
