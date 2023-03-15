@@ -1,17 +1,22 @@
 <script setup>
-import EventCalendar from './components/EventCalendar.vue';
+import EventCalendar from './components/EventCalendar.vue'
 import HelloWorld from './components/HelloWorld.vue'
 import TheWelcome from './components/TheWelcome.vue'
 </script>
 
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="./assets/img/calendar_icon.png" width="125" height="125" />
+    <img
+      alt="Vue logo"
+      class="logo"
+      src="./assets/img/calendar_icon.png"
+      width="125"
+      height="125"
+    />
 
     <div class="wrapper">
-      <HelloWorld msg=" Day / Week View" />
-      <a href="./components/EventCalendar2.vue">Calendar 2</a>.
-
+      <HelloWorld msg="Group 10 Calender" />
+      <a>Made by: Group 10</a>
     </div>
   </header>
 
