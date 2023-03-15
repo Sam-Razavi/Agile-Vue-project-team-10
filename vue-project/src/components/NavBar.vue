@@ -16,7 +16,10 @@ import {  RouterView } from 'vue-router'
       <li class="nav-item">
         <a class="nav-link" href="#">About</a>
       </li>
-
+      <li class="nav-item">
+        <router-link to ="MonthlyCalendar">Månads vy</router-link>
+      </li>
+      
     </ul>
   </div>
 </nav>
