@@ -1,4 +1,5 @@
 <template>
+
     <div>
       <div class="calendar-header">
         <!-- Where it shows the start and the end of the week -->
@@ -125,6 +126,7 @@
   input.style.left = `${buttonRect.left}px`
   input.style.width = `${buttonRect.width}px`
   input.style.height = `${buttonRect.height}px`
+
 
   const hour = this.hours.find(hour => hour.time === time)
   const cell = hour[day]
@@ -291,6 +293,7 @@ viewPreviousWeek() {
   </script>
   <style scoped>
 .hours {
+
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
