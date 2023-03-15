@@ -1,5 +1,6 @@
 <template>
-    <div :class="{ 'dark-mode': isDarkMode }">
+
+    <div>
       <div class="calendar-header">
         <!-- Where it shows the start and the end of the week -->
         <button @click="viewPreviousWeek">Previous Week</button>
@@ -130,6 +131,7 @@
   input.style.left = `${buttonRect.left}px`
   input.style.width = `${buttonRect.width}px`
   input.style.height = `${buttonRect.height}px`
+
 
   const hour = this.hours.find(hour => hour.time === time)
   const cell = hour[day]
@@ -297,6 +299,7 @@ deleteAll () {
   </script>
   <style scoped>
 .hours {
+
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
