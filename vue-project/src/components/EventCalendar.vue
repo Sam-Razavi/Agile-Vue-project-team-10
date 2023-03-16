@@ -51,12 +51,21 @@ import listPlugin from '@fullcalendar/list'
 import interactionPlugin from '@fullcalendar/interaction'
 
 export default {
+  mounted() {
+    if (localStorage.getItem('events') !== null) {
+      this.events = JSON.parse(localStorage.getItem('events'))
+    } else {
+      this.events = []
+      localStorage.setItem('events', JSON.stringify(this.events))
+    }
+  },
   components: {
     FullCalendar
   },
   setup() {
     const calendarRef = ref(null)
     const showForm = ref(false)
+    const events = JSON.parse(localStorage.getItem('events'))
     const event = reactive({
       title: '',
       start: '',
@@ -98,6 +107,8 @@ export default {
       }
       api.addEvent(newEvent)
       showForm.value = false
+      events.push(newEvent)
+      localStorage.setItem('events', JSON.stringify(events))
     }
     return {
       calendarRef,
