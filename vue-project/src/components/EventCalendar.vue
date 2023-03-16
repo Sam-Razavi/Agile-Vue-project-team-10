@@ -68,6 +68,7 @@ export default {
     const events = JSON.parse(localStorage.getItem('events'))
     const numberOfIds = 100
     const event = reactive({
+      id: '',
       title: '',
       start: '',
       startTime: '',
@@ -91,6 +92,7 @@ export default {
       },
       editable: true,
       selectable: true,
+
       timeZone: 'Europe/Paris',
       dateClick: (arg) => {
         event.start = arg.date.toISOString().slice(0, 10)
@@ -100,8 +102,9 @@ export default {
         showForm.value = true
       },
       eventClick: (arg) => {
+        let i = events.findIndex((e) => e.id === arg.event.id)
+        events.splice(i, 1)
         arg.event.remove()
-        events.splice(events.indexOf(arg.event), 1)
         localStorage.setItem('events', JSON.stringify(events))
       }
     })
