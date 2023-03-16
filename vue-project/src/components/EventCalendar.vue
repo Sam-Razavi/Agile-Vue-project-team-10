@@ -66,6 +66,7 @@ export default {
     const calendarRef = ref(null)
     const showForm = ref(false)
     const events = JSON.parse(localStorage.getItem('events'))
+    const numberOfIds = 100
     const event = reactive({
       title: '',
       start: '',
@@ -80,6 +81,7 @@ export default {
       }
     })
     const options = reactive({
+      initialEvents: events,
       plugins: [dayGridPlugin, interactionPlugin, timeGridPlugin, listPlugin],
       initialView: 'dayGridMonth',
       headerToolbar: {
@@ -96,11 +98,17 @@ export default {
         event.end = arg.date.toISOString().slice(0, 10)
         event.endTime = '13:00'
         showForm.value = true
+      },
+      eventClick: (arg) => {
+        arg.event.remove()
+        events.splice(events.indexOf(arg.event), 1)
+        localStorage.setItem('events', JSON.stringify(events))
       }
     })
     const addEvent = () => {
       const api = calendarRef.value.getApi()
       const newEvent = {
+        id: `${Math.round(Math.random() * (numberOfIds - 1)) + 1}$`,
         title: event.title,
         start: `${event.start}T${event.startTime}:00`,
         end: `${event.end}T${event.endTime}:00`
