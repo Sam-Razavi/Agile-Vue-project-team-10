@@ -7,9 +7,9 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import listPlugin from '@fullcalendar/list'
 import interactionPlugin from '@fullcalendar/interaction'
-import useEvents from '../composables/useEvents.js'
+import useEvents from '../composables/useEvents'
 
-// 6st förinlagda Kalender händelser, därav (6), så nya inlägg börjar med id från 7
+// 6st redan förinlagda Kalender händelser i json, därav (6), så nya inlägg börjar med id från 6 +1
 const id = ref (6)
 const { getEvents, createEvent, updateEvent, destroyEvent } = useEvents()
 //Variabel döpt options, med plugin knappar att välja att visa olika vyer av kalendern, samt vart på sidan knapparna ska ligga
@@ -28,22 +28,27 @@ const options = reactive ({
 // Funktion så att det blir en ny händelse +1
     select: (arg) => {
         id.value = id.value + 1
-// Renderar ut en ny händelse vid "eventClick", samt loggar till konsollen.
+// variabeln cal renderar ut en ny händelse vid "eventClick".
     const cal = arg.view.calendar
         cal.unselect ()
         cal.addEvent ({
+            // Value (6) +1 blir nya id't
             id: `${id.value}`,
+            // Händelsen/eventets namn blir först Ny händelse +id't
             title: `Ny händelse ${id.value}`,
             start: arg.start,
             end: arg.end,
             allDay: true
         })
     },
+
+    // eventClick funktion som tar bort eventet vid onClick
     eventClick: (arg) =>{
         if(arg.event){
             arg.event.remove()
         }
     },
+    // eventAdd funktionen sparar Nya händelsen i objektet events med sitt id, title, tid osv.
     events: [],
 eventAdd: (arg) => {
 createEvent ({
@@ -54,6 +59,7 @@ createEvent ({
     allDay: arg.event.allDay
 })
 },
+// eventChange funktion som ändrar en befintlig händelse
 eventChange: (arg) => {
 updateEvent ({
     id: arg.event.id,
@@ -63,15 +69,17 @@ updateEvent ({
     allDay: arg.event.allDay
 }, arg.event.id)
 },
+// Tar bort händelsen, kom dock aldrig så långt
 eventRemove: (arg) => {
 destroyEvent(arg.event.id)
-}
+},
 })
+
+// Bevakar befintliga /nya händelser med watch
 options.events = getEvents.value
 watch(getEvents, () => {
     options.events = getEvents.value
-}
-)
+})
 </script>
 
 <template>

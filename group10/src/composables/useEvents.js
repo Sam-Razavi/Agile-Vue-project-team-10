@@ -5,7 +5,7 @@ import { fetchEvent, storeEvent, changeEvent, deleteEvent } from "../apis/events
 export default function useEvents() {
 // Hämtar ref i [] med getEvents
     const getEvents = ref([])
-
+// Variabler för olika funktioner att hantera händelserna
     const setEvent = async () => {
         getEvents.value = await fetchEvent()
     }
@@ -24,12 +24,12 @@ export default function useEvents() {
 
     onMounted(setEvent)
 
+// Returnerar alla events
     return{
         getEvents,
         setEvent,
         createEvent,
         updateEvent,
         destroyEvent,
-
     }
 }
